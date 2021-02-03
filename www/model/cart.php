@@ -105,6 +105,7 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
+  $db->beginTransaction();
   foreach($carts as $cart){
     if(update_item_stock(
         $db, 
@@ -114,8 +115,68 @@ function purchase_carts($db, $carts){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
   }
-  
+  purchase_history($db, $carts);
   delete_user_carts($db, $carts[0]['user_id']);
+  if(has_error()){
+    $db->rollback();
+  }else{
+    $db->commit();
+  }
+}
+
+function insert_histories($db, $user_id, $total_price){
+  $sql = "
+    INSERT INTO
+      histories(
+        user_id,
+        total_price,
+        purchase_date
+      )
+    VALUES(?, ?, NOW())
+  ";
+  return execute_query($db, $sql, [$user_id, $total_price]);
+}
+
+function insert_history_details($db, $history_id, $item_id, $purchase_price, $amount){
+  $sql = "
+    INSERT INTO
+      history_details(
+        history_id,
+        item_id,
+        purchase_price,
+        amount
+      )
+    VALUES(?, ?, ?, ?)
+  ";
+  return execute_query($db, $sql, [$history_id, $item_id, $purchase_price, $amount]);
+}
+
+function purchase_history($db, $carts){
+  $db->beginTransaction();
+  if(insert_histories(
+    $db,
+    $carts['user_id'], 
+    sum_carts($carts)
+    ) === false){
+    set_error('購入履歴の登録に失敗しました。');
+    }
+  $history_id = $db->lastInsertId();
+  foreach($carts as $cart){
+    if(insert_history_details(
+    $db,
+    $history_id, 
+    $cart['item_id'], 
+    $cart['price'], 
+    $cart['amount']
+    ) === false){
+       set_error('購入明細の登録に失敗しました。');
+     }
+  }
+  if(has_error()){
+    $db->rollback();
+  }else{
+    $db->commit();
+  }
 }
 
 function delete_user_carts($db, $user_id){

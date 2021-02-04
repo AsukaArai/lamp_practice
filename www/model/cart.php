@@ -152,10 +152,9 @@ function insert_history_details($db, $history_id, $item_id, $purchase_price, $am
 }
 
 function purchase_history($db, $carts){
-  $db->beginTransaction();
   if(insert_histories(
     $db,
-    $carts['user_id'], 
+    $carts[0]['user_id'], 
     sum_carts($carts)
     ) === false){
     set_error('購入履歴の登録に失敗しました。');
@@ -173,10 +172,9 @@ function purchase_history($db, $carts){
      }
   }
   if(has_error()){
-    $db->rollback();
-  }else{
-    $db->commit();
+    return false;
   }
+  return true;
 }
 
 function delete_user_carts($db, $user_id){

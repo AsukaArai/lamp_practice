@@ -13,11 +13,15 @@ if(is_logined() === false){
   
 $db = get_db_connect();
 $user = get_login_user($db);
+$history_id=get_post('history_id');
+$token=get_post('token');
 
-$histories = get_history($db, $user, $user_id);
-$details = get_history_detail($db, $user, $history_id, $user_id);
-
-$token = get_csrf_token();
-$total_price = sum_carts($carts);
-
+if(is_valid_csrf_token($token)){
+    $histories = get_history($db, $user);
+    $details = get_history_detail($db, $user, $history_id);
+}else{
+    $histories=[];
+    $details=[];
+    set_error('不正な操作が行われました');
+}
 include_once VIEW_PATH . 'history_detail_view.php';

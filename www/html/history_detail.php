@@ -17,7 +17,7 @@ $history_id=get_post('history_id');
 $token=get_post('token');
 
 if(is_valid_csrf_token($token)){
-    $histories = get_history($db, $user);
+    $histories = get_history($db, $user, $history_id);
     $details = get_history_detail($db, $user, $history_id);
 }else{
     $histories=[];

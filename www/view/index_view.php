@@ -42,6 +42,11 @@
       <?php } ?>
       </div>
     </div>
+    <div class="pages">
+      <?php for($i=1; $i <= $pages ; $i++) {?>
+        <a name="page" href="?page=<?php echo $i ?>"><?php echo $i; ?></a>
+      <?php } ?>
+    </div>
   </div>
   
 </body>

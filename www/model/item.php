@@ -8,6 +8,8 @@ function count_item($db){
     SELECT COUNT(*)
     FROM
       items
+    WHERE
+      status=1
   ";
   return fetch_column($db, $sql);
 }
@@ -31,6 +33,7 @@ function get_item($db, $item_id){
 }
 
 function get_items($db, $is_open = false, $start = null){
+  $params=[];
   $sql = '
     SELECT
       item_id, 
@@ -45,10 +48,16 @@ function get_items($db, $is_open = false, $start = null){
   if($is_open === true){
     $sql .= '
       WHERE status = 1
-      LIMIT $start, 8
+      
     ';
   }
-  return fetch_all_query($db, $sql, $start);
+  if($start!==null){
+    $sql.='
+    LIMIT ?, ?
+    ';
+    $params=[$start, ITEMS_PER_PAGE];
+  }
+  return fetch_all_query($db, $sql, $params);
 }
 
 function get_all_items($db){
@@ -226,7 +235,7 @@ function get_page(){
 
 function get_start($page){
   if($page>1){
-    $start=($page*8)-8;
+    $start=($page*ITEMS_PER_PAGE)-ITEMS_PER_PAGE;
   }else{
     $start=0;
   }

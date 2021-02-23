@@ -3,6 +3,16 @@ require_once MODEL_PATH . 'functions.php';
 require_once MODEL_PATH . 'db.php';
 
 // DB利用
+function count_item($db){
+  $sql="
+    SELECT COUNT(*)
+    FROM
+      items
+    WHERE
+      status=1
+  ";
+  return fetch_column($db, $sql);
+}
 
 function get_item($db, $item_id){
   $sql = "
@@ -22,7 +32,8 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql, [$item_id]);
 }
 
-function get_items($db, $is_open = false){
+function get_items($db, $is_open = false, $start = null){
+  $params=[];
   $sql = '
     SELECT
       item_id, 
@@ -37,18 +48,24 @@ function get_items($db, $is_open = false){
   if($is_open === true){
     $sql .= '
       WHERE status = 1
+      
     ';
   }
-
-  return fetch_all_query($db, $sql);
+  if($start!==null){
+    $sql.='
+    LIMIT ?, ?
+    ';
+    $params=[$start, ITEMS_PER_PAGE];
+  }
+  return fetch_all_query($db, $sql, $params);
 }
 
 function get_all_items($db){
   return get_items($db);
 }
 
-function get_open_items($db){
-  return get_items($db, true);
+function get_open_items($db, $start){
+  return get_items($db, true, $start);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -205,4 +222,22 @@ function is_valid_item_status($status){
     $is_valid = false;
   }
   return $is_valid;
+}
+
+function get_page(){
+  if(isset($_GET['page'])){
+    $page=(int)$_GET['page'];
+  }else{
+    $page=1;
+  }
+  return $page;
+}
+
+function get_start($page){
+  if($page>1){
+    $start=($page*ITEMS_PER_PAGE)-ITEMS_PER_PAGE;
+  }else{
+    $start=0;
+  }
+  return $start;
 }

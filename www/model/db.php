@@ -34,6 +34,8 @@ function fetch_all_query($db, $sql, $params = array()){
     return $statement->fetchAll();
   }catch(PDOException $e){
     set_error('データ取得に失敗しました。');
+    set_error($e->getMessage());
+    //var_dump($sql, $params);
   }
   return false;
 }
@@ -44,6 +46,17 @@ function execute_query($db, $sql, $params = array()){
     return $statement->execute($params);
   }catch(PDOException $e){
     set_error('更新に失敗しました。');
+  }
+  return false;
+}
+
+function fetch_column($db, $sql, $params = array()){
+  try{
+    $statement = $db->prepare($sql);
+    $statement->execute($params);
+    return $statement->fetchColumn();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました。');
   }
   return false;
 }

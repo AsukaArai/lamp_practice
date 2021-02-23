@@ -42,6 +42,26 @@
       <?php } ?>
       </div>
     </div>
+    <div>
+      <?php if($page>=2){ ?>
+        <a name="page" href="?page=<?php echo $page-1; ?>">前へ</a>
+      <?php }else{ ?>
+        <a name="page">前へ</a>
+      <?php } ?>
+      <?php for($i=1; $i <= $pages ; $i++) {?>
+        <?php if($i===$page){ ?>
+        <a name="page"><?php echo $i; ?></a>
+        <?php }else{ ?>
+          <a name="page" href="?page=<?php echo $i ?>"><?php echo $i; ?></a>
+       <?php } ?>
+      <?php } ?>
+      <?php if($page>=1&&$page<$pages){ ?>
+        <a name="page" href="?page=<?php echo $page+1; ?>">次へ</a>
+      <?php }else{ ?>
+        <a name="page">次へ</a>
+      <?php } ?>
+      <p><?php print $total_items ?>件中<?php echo $start+1; ?> - <?php echo min($array); ?>件目の商品</p>
+    </div>
   </div>
   
 </body>

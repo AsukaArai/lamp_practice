@@ -10,15 +10,6 @@
 <h1>購入明細</h1>
 <div class="container">
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
-<<<<<<< HEAD
-    <div>
-        <?php foreach($histories as $history){ ?>
-            <p><?php print(h(number_format($history['history_id']))); ?></p>
-            <p><?php print($history['purchase_date']); ?></p>
-            <p><?php print(h(number_format($history['total_price']))); ?>円</p>
-        <?php } ?>
-    </div>
-=======
     <table class="table table-bordered">
         <thead class="thead-light">
         <tr>
@@ -37,7 +28,6 @@
             <?php } ?>
         </tbody>
     </table>
->>>>>>> 737fd024df926a76ef3da0b5ffd2ece9fdfd1d29
     <table class="table table-bordered">
         <thead class="thead-light">
             <tr>
